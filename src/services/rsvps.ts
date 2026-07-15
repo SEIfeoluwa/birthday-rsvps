@@ -1,33 +1,30 @@
-import type { NewRsvpRecord, RsvpRecord } from '../types/database'
-import type { RSVPInput } from '../schemas/rsvpSchema'
+import { supabase } from '../services/supabase'
 
-import { supabase } from './supabase'
-
-export function toRsvpRecord(input: RSVPInput): NewRsvpRecord {
-  return {
-    first_name: input.firstName,
-    last_name: input.lastName,
-    email: input.email,
-    phone: input.phone,
-    attendance: input.attendance,
-    guest_count: input.guestCount,
-    message: input.message?.trim() || null,
-  }
+export interface RsvpDashboardStats {
+  total_responses: number;
+  yes_responses: number;
+  no_responses: number;
+  maybe_responses: number;
+  total_attending_guests: number;
+  total_men: number;
+  total_women: number;
+  total_children: number;
 }
 
-export async function createRsvp(input: RSVPInput): Promise<RsvpRecord> {
-  if (!supabase) {
-    throw new Error('Missing Supabase environment variables')
+export async function getRsvpDashboardStats(): Promise<RsvpDashboardStats> {
+  const { data, error } = await supabase.rpc(
+    "get_rsvp_dashboard_stats",
+  );
+
+  if (error) {
+    throw new Error(error.message);
   }
 
-  const { data, error } = await supabase
-    .from('rsvps')
-    .insert(toRsvpRecord(input))
-    .select()
-    .single()
+  const stats = data?.[0];
 
-  if (error) throw error
-  if (!data) throw new Error('RSVP was not saved')
+  if (!stats) {
+    throw new Error("No RSVP statistics were returned.");
+  }
 
-  return data
+  return stats;
 }
