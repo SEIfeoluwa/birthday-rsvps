@@ -4,9 +4,13 @@ import { useNavigate } from 'react-router-dom'
 import { getRsvpDashboardStats, updateRsvp } from '../services/rsvps'
 import { supabase } from '../services/supabase'
 import type { RsvpDashboardStats } from '../services/rsvps'
-import type { AttendanceStatus, RsvpRecord, UpdateRsvpRecord } from '../types/database'
+import type {
+  AttendanceStatus,
+  RsvpRecord,
+  UpdateRsvpRecord,
+} from '../types/database'
 
-const guestCountOptions = Array.from({ length: 11 }, (_, count) => count)
+const guestCountOptions = Array.from({ length: 3 }, (_, count) => count)
 
 function toEditForm(rsvp: RsvpRecord): UpdateRsvpRecord {
   return {
@@ -126,12 +130,12 @@ export default function AdminDashboardPage() {
       return 'Phone number is required.'
     }
 
-    if (totalGuests > 10) {
-      return 'Guest count cannot exceed 10.'
+    if (totalGuests > 2) {
+      return 'Guest count cannot exceed 2.'
     }
 
     if (form.attendance !== 'no' && totalGuests < 1) {
-      return 'Guest count must be at least 1 for Yes or Maybe responses.'
+      return 'Guest count must be at least 1 for Yes responses.'
     }
 
     if ((form.message?.length ?? 0) > 500) {
@@ -220,11 +224,6 @@ export default function AdminDashboardPage() {
           <article className="stat-card">
             <h2>{stats.no_responses}</h2>
             <p>No Responses</p>
-          </article>
-
-          <article className="stat-card">
-            <h2>{stats.maybe_responses}</h2>
-            <p>Maybe Responses</p>
           </article>
 
           <article className="stat-card">
@@ -351,7 +350,6 @@ export default function AdminDashboardPage() {
                         >
                           <option value="yes">Yes</option>
                           <option value="no">No</option>
-                          <option value="maybe">Maybe</option>
                         </select>
                       ) : (
                         <span

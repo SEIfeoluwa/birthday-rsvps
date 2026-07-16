@@ -1,4 +1,4 @@
-export type AttendanceStatus = 'yes' | 'no' | 'maybe'
+export type AttendanceStatus = 'yes' | 'no'
 
 export type RsvpRecord = {
   id: string

@@ -15,6 +15,10 @@ export default function Schedule() {
           <h3>Venue</h3>
           <p>Richland Golf Club, 50 Glenbrook Dr, Middletown, MD 21769</p>
         </div>
+        <div className="schedule-item">
+          <h3>Parking</h3>
+          <p>Available on-site</p>
+        </div>
       </div>
     </section>
   )

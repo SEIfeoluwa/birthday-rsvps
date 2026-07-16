@@ -4,13 +4,13 @@ const guestCountSchema = z.coerce
   .number()
   .int("Guest counts must be whole numbers.")
   .min(0, "Guest counts cannot be negative.")
-  .max(10, "Guest counts cannot exceed 10.");
+  .max(2, "Guest counts cannot exceed 2.");
 
 export const rsvpSchema = z.object({
     firstName: z.string().trim().min(1, "Enter your first name."),
     lastName: z.string().trim().min(1, "Enter your last name."),
     phone: z.string().trim().min(1, "Enter your phone number."),
-    attendance: z.enum(["yes", "no", "maybe"], { error: "Select your attendance." }),
+    attendance: z.enum(["yes", "no"], { error: "Select your attendance." }),
     maleGuestCount: guestCountSchema,
     femaleGuestCount: guestCountSchema,
     childGuestCount: guestCountSchema,
@@ -24,9 +24,9 @@ export const rsvpSchema = z.object({
   },
 ).refine(
   ({ maleGuestCount, femaleGuestCount, childGuestCount }) =>
-    maleGuestCount + femaleGuestCount + childGuestCount <= 10,
+    maleGuestCount + femaleGuestCount + childGuestCount <= 2,
   {
-    message: "Guest count cannot exceed 10.",
+    message: "Guest count cannot exceed 2.",
     path: ["maleGuestCount"],
   },
 );

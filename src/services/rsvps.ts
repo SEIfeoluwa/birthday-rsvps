@@ -6,7 +6,6 @@ export interface RsvpDashboardStats {
   total_responses: number
   yes_responses: number
   no_responses: number
-  maybe_responses: number
   total_attending_guests: number
   total_men: number
   total_women: number

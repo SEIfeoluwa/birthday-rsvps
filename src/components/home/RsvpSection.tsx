@@ -12,7 +12,7 @@ type FormData = Omit<RSVPInput, 'attendance'> & {
   attendance: RSVPInput['attendance'] | ''
 }
 
-const guestCountOptions = Array.from({ length: 11 }, (_, count) => count)
+const guestCountOptions = Array.from({ length: 3 }, (_, count) => count)
 
 const initialFormData: FormData = {
   firstName: '',
@@ -150,7 +150,6 @@ export default function Rsvp({ onRsvpClick }: RsvpProps) {
               <option value="">Select your attendance</option>
               <option value="yes">Yes, I'll be there!</option>
               <option value="no">Sorry, I can't make it</option>
-              <option value="maybe">Maybe</option>
             </select>
           </div>
         </div>

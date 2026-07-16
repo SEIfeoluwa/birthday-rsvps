@@ -23,11 +23,11 @@ export default function About() {
             </div>
             <div>
               <dt>Dress Code</dt>
-              <dd>Cocktail Elegant</dd>
+              <dd>Traditional</dd>
             </div>
             <div>
-              <dt>Parking</dt>
-              <dd>Available on-site</dd>
+              <dt>Color of the Day</dt>
+              <dd>Wine and gold</dd>
             </div>
           </dl>
         </div>
