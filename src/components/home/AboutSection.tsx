@@ -31,7 +31,7 @@ export default function About() {
             </div>
           </dl>
         </div>
-        <img src={aboutImage} alt="Mr and Mrs Fayemi" />
+        <img src={aboutImage} alt="Paul and Abosede" />
       </div>
     </section>
   )

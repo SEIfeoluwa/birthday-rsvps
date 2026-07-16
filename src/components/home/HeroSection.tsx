@@ -9,7 +9,8 @@ export default function Hero({ onRsvpClick }: HeroProps) {
     <section className="hero" style={{ backgroundImage: `url(${heroImg})` }}>
       <div className="hero-content">
         <p className="hero-eyebrow">Please join us in celebrating</p>
-        <h1>Mr & Mrs Fayemi</h1>
+        <h1>Mr &amp; Mrs Fayemi</h1>
+        <p className="hero-ages">A birthday celebration of 75 &amp; 70</p>
         <p className="hero-details">
           Saturday, September 19th, 2026 at 3:00 PM<br />
           Richland Golf Club, 50 Glenbrook Dr, Middletown, MD 21769

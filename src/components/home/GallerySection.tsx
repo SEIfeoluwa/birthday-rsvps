@@ -5,11 +5,11 @@ import galleryImageFour from '../../assets/WhatsApp Image 2026-05-25 at 17.13.10
 import galleryImageFive from '../../assets/WhatsApp Image 2026-05-25 at 17.13.11.jpeg'
 
 const galleryImages = [
-  { src: galleryImageOne, alt: 'Mr and Mrs Fayemi celebration photo 1' },
-  { src: galleryImageTwo, alt: 'Mr and Mrs Fayemi celebration photo 2' },
-  { src: galleryImageThree, alt: 'Mr and Mrs Fayemi celebration photo 3' },
-  { src: galleryImageFour, alt: 'Mr and Mrs Fayemi celebration photo 4' },
-  { src: galleryImageFive, alt: 'Mr and Mrs Fayemi celebration photo 5' },
+  { src: galleryImageOne, alt: 'Paul and Abosede celebration photo 1' },
+  { src: galleryImageTwo, alt: 'Paul and Abosede celebration photo 2' },
+  { src: galleryImageThree, alt: 'Paul and Abosede celebration photo 3' },
+  { src: galleryImageFour, alt: 'Paul and Abosede celebration photo 4' },
+  { src: galleryImageFive, alt: 'Paul and Abosede celebration photo 5' },
 ]
 
 export default function Gallery() {
