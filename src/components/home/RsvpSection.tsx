@@ -20,7 +20,7 @@ const initialFormData: FormData = {
   phone: '',
   attendance: '',
   maleGuestCount: 0,
-  femaleGuestCount: 1,
+  femaleGuestCount: 0,
   childGuestCount: 0,
   message: '',
 }
