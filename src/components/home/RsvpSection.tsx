@@ -12,13 +12,16 @@ type FormData = Omit<RSVPInput, 'attendance'> & {
   attendance: RSVPInput['attendance'] | ''
 }
 
+const guestCountOptions = Array.from({ length: 11 }, (_, count) => count)
+
 const initialFormData: FormData = {
   firstName: '',
   lastName: '',
-  email: '',
   phone: '',
   attendance: '',
-  guestCount: 1,
+  maleGuestCount: 0,
+  femaleGuestCount: 1,
+  childGuestCount: 0,
   message: '',
 }
 
@@ -42,9 +45,15 @@ export default function Rsvp({ onRsvpClick }: RsvpProps) {
     >
   ) => {
     const { name, value } = e.target
+    const numericFields = [
+      'maleGuestCount',
+      'femaleGuestCount',
+      'childGuestCount',
+    ]
+
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'guestCount' ? parseInt(value) : value,
+      [name]: numericFields.includes(name) ? Number(value) : value,
     }))
   }
 
@@ -84,10 +93,10 @@ export default function Rsvp({ onRsvpClick }: RsvpProps) {
   return (
     <section className="rsvp-form" id="rsvp-form-section">
       <h2>Will you be attending?</h2>
-      <p>Please respond by August 15, 2026</p>
+      <p>Please respond by August 19</p>
       
       <form onSubmit={handleSubmit} className="rsvp-form-container">
-        <div className="form-row">
+        <div className="form-row rsvp-contact-row">
           <div className="form-group">
             <label htmlFor="firstName">First Name</label>
             <input
@@ -113,22 +122,7 @@ export default function Rsvp({ onRsvpClick }: RsvpProps) {
               required
             />
           </div>
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="your.email@example.com"
-              required
-            />
-          </div>
-
+          
           <div className="form-group">
             <label htmlFor="phone">Phone</label>
             <input
@@ -161,19 +155,61 @@ export default function Rsvp({ onRsvpClick }: RsvpProps) {
           </div>
         </div>
 
-        <div className="form-row">
+        <div className="form-row plus-ones-row">
+          <h3 className="form-subheader">Total Attending</h3>
+          <p className="form-helper">
+            Please include yourself and everyone attending with you.
+          </p>
+
           <div className="form-group">
-            <label htmlFor="guestCount">Number of Guests</label>
-            <input
-              type="number"
-              id="guestCount"
-              name="guestCount"
-              value={formData.guestCount}
+            <label htmlFor="maleGuestCount">Men</label>
+            <select
+              id="maleGuestCount"
+              name="maleGuestCount"
+              value={formData.maleGuestCount}
               onChange={handleChange}
-              min="1"
-              max="10"
               required
-            />
+            >
+              {guestCountOptions.map((count) => (
+                <option key={count} value={count}>
+                  {count}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="femaleGuestCount">Women</label>
+            <select
+              id="femaleGuestCount"
+              name="femaleGuestCount"
+              value={formData.femaleGuestCount}
+              onChange={handleChange}
+              required
+            >
+              {guestCountOptions.map((count) => (
+                <option key={count} value={count}>
+                  {count}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="childGuestCount">Children</label>
+            <select
+              id="childGuestCount"
+              name="childGuestCount"
+              value={formData.childGuestCount}
+              onChange={handleChange}
+              required
+            >
+              {guestCountOptions.map((count) => (
+                <option key={count} value={count}>
+                  {count}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

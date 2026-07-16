@@ -4,11 +4,34 @@ export default function About() {
   return (
     <section className="about">
       <div className="about-content">
-        <img src={aboutImage} alt="Mr and Mrs Fayemi" />
-        <div>
-          <h2>About the Event</h2>
-          <p>Join us for a wonderful celebration filled with joy, laughter, and cherished moments with friends and family.</p>
+        <div className="about-text">
+          <h3>A Lifetime Worth Celebrating</h3>
+          <p>
+            Together they have shared decades of love, laughter, and unforgettable stories. This year, we gather to honor
+            two extraordinary milestones with an evening of fine dining, live music, and cherished company. Come raise a
+            glass to the years behind &mdash; and the many still to come.
+          </p>
+
+          <dl className="event-details">
+            <div>
+              <dt>Date &amp; Time</dt>
+              <dd>Saturday, Sept 19 &middot; 3:00 PM</dd>
+            </div>
+            <div>
+              <dt>Location</dt>
+              <dd>Richland Golf Club</dd>
+            </div>
+            <div>
+              <dt>Dress Code</dt>
+              <dd>Cocktail Elegant</dd>
+            </div>
+            <div>
+              <dt>Parking</dt>
+              <dd>Available on-site</dd>
+            </div>
+          </dl>
         </div>
+        <img src={aboutImage} alt="Mr and Mrs Fayemi" />
       </div>
     </section>
   )

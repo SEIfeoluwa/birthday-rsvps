@@ -1,30 +1,97 @@
-import { supabase } from '../services/supabase'
+import { supabase } from './supabase'
+import type { RSVPInput } from '../schemas/rsvpSchema'
+import type { NewRsvpRecord, RsvpRecord, UpdateRsvpRecord } from '../types/database'
 
 export interface RsvpDashboardStats {
-  total_responses: number;
-  yes_responses: number;
-  no_responses: number;
-  maybe_responses: number;
-  total_attending_guests: number;
-  total_men: number;
-  total_women: number;
-  total_children: number;
+  total_responses: number
+  yes_responses: number
+  no_responses: number
+  maybe_responses: number
+  total_attending_guests: number
+  total_men: number
+  total_women: number
+  total_children: number
+}
+
+function getSupabaseClient() {
+  if (!supabase) {
+    throw new Error('Missing Supabase environment variables.')
+  }
+
+  return supabase
+}
+
+export async function createRsvp(input: RSVPInput): Promise<RsvpRecord> {
+  const client = getSupabaseClient()
+
+  const newRsvp: NewRsvpRecord = {
+    first_name: input.firstName,
+    last_name: input.lastName,
+    phone: input.phone,
+    attendance: input.attendance,
+    male_guest_count: input.maleGuestCount,
+    female_guest_count: input.femaleGuestCount,
+    child_guest_count: input.childGuestCount,
+    message: input.message?.trim() || null,
+  }
+
+  const { data, error } = await client
+    .from('rsvps')
+    .insert(newRsvp)
+    .select()
+    .single()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return data as RsvpRecord
+}
+
+export async function updateRsvp(
+  id: string,
+  input: UpdateRsvpRecord,
+): Promise<RsvpRecord> {
+  const client = getSupabaseClient()
+
+  const updatedRsvp: UpdateRsvpRecord = {
+    first_name: input.first_name.trim(),
+    last_name: input.last_name.trim(),
+    phone: input.phone.trim(),
+    attendance: input.attendance,
+    male_guest_count: input.male_guest_count,
+    female_guest_count: input.female_guest_count,
+    child_guest_count: input.child_guest_count,
+    message: input.message?.trim() || null,
+  }
+
+  const { data, error } = await client
+    .from('rsvps')
+    .update(updatedRsvp)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return data as RsvpRecord
 }
 
 export async function getRsvpDashboardStats(): Promise<RsvpDashboardStats> {
-  const { data, error } = await supabase.rpc(
-    "get_rsvp_dashboard_stats",
-  );
+  const client = getSupabaseClient()
+  const { data, error } = await client.rpc('get_rsvp_dashboard_stats')
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(error.message)
   }
 
-  const stats = data?.[0];
+  const stats = data?.[0]
 
   if (!stats) {
-    throw new Error("No RSVP statistics were returned.");
+    throw new Error('No RSVP statistics were returned.')
   }
 
-  return stats;
+  return stats as RsvpDashboardStats
 }

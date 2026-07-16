@@ -1,13 +1,34 @@
 import { z } from "zod";
 
+const guestCountSchema = z.coerce
+  .number()
+  .int("Guest counts must be whole numbers.")
+  .min(0, "Guest counts cannot be negative.")
+  .max(10, "Guest counts cannot exceed 10.");
+
 export const rsvpSchema = z.object({
     firstName: z.string().trim().min(1, "Enter your first name."),
     lastName: z.string().trim().min(1, "Enter your last name."),
-    email: z.email("Enter a valid email address.").trim(),
     phone: z.string().trim().min(1, "Enter your phone number."),
     attendance: z.enum(["yes", "no", "maybe"], { error: "Select your attendance." }),
-    guestCount: z.number().int().min(1, 'Guest count must be at least 1.').max(10, 'Guest count cannot exceed 10.'),
+    maleGuestCount: guestCountSchema,
+    femaleGuestCount: guestCountSchema,
+    childGuestCount: guestCountSchema,
     message: z.string().trim().max(500, "Message cannot exceed 500 characters.").optional(),
-});
+}).refine(
+  ({ maleGuestCount, femaleGuestCount, childGuestCount }) =>
+    maleGuestCount + femaleGuestCount + childGuestCount >= 1,
+  {
+    message: "Guest count must be at least 1.",
+    path: ["maleGuestCount"],
+  },
+).refine(
+  ({ maleGuestCount, femaleGuestCount, childGuestCount }) =>
+    maleGuestCount + femaleGuestCount + childGuestCount <= 10,
+  {
+    message: "Guest count cannot exceed 10.",
+    path: ["maleGuestCount"],
+  },
+);
 
 export type RSVPInput = z.infer<typeof rsvpSchema>;
