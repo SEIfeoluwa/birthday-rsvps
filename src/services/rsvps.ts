@@ -20,7 +20,7 @@ function getSupabaseClient() {
   return supabase
 }
 
-export async function createRsvp(input: RSVPInput): Promise<RsvpRecord> {
+export async function createRsvp(input: RSVPInput): Promise<void> {
   const client = getSupabaseClient()
 
   const newRsvp: NewRsvpRecord = {
@@ -34,17 +34,11 @@ export async function createRsvp(input: RSVPInput): Promise<RsvpRecord> {
     message: input.message?.trim() || null,
   }
 
-  const { data, error } = await client
-    .from('rsvps')
-    .insert(newRsvp)
-    .select()
-    .single()
+  const { error } = await client.from('rsvps').insert(newRsvp)
 
   if (error) {
     throw new Error(error.message)
   }
-
-  return data as RsvpRecord
 }
 
 export async function updateRsvp(
