@@ -20,6 +20,21 @@ function getSupabaseClient() {
   return supabase
 }
 
+function getRsvpSubmissionErrorMessage(error: { code?: string; message: string }) {
+  if (error.code === '23505') {
+    return 'An RSVP has already been submitted with this phone number.'
+  }
+
+  if (
+    error.code === '42501' ||
+    error.message.toLowerCase().includes('row-level security')
+  ) {
+    return 'We could not submit your RSVP right now. Please try again later.'
+  }
+
+  return 'We could not submit your RSVP right now. Please try again later.'
+}
+
 export async function createRsvp(input: RSVPInput): Promise<void> {
   const client = getSupabaseClient()
 
@@ -37,7 +52,7 @@ export async function createRsvp(input: RSVPInput): Promise<void> {
   const { error } = await client.from('rsvps').insert(newRsvp)
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error(getRsvpSubmissionErrorMessage(error))
   }
 }
 
