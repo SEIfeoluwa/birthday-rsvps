@@ -78,6 +78,16 @@ export async function updateRsvp(
   return data as RsvpRecord
 }
 
+export async function deleteRsvp(id: string): Promise<void> {
+  const client = getSupabaseClient()
+
+  const { error } = await client.from('rsvps').delete().eq('id', id)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+}
+
 export async function getRsvpDashboardStats(): Promise<RsvpDashboardStats> {
   const client = getSupabaseClient()
   const { data, error } = await client.rpc('get_rsvp_dashboard_stats')

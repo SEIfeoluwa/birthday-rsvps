@@ -895,6 +895,12 @@ button {
   color: var(--event-navy);
 }
 
+.admin-action-danger {
+  border-color: #991b1b;
+  background: #991b1b;
+  color: #fff7ed;
+}
+
 .admin-edit-error {
   margin-top: 16px;
   padding: 12px;

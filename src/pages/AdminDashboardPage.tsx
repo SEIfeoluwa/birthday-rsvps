@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { getRsvpDashboardStats, updateRsvp } from '../services/rsvps'
+import { deleteRsvp, getRsvpDashboardStats, updateRsvp } from '../services/rsvps'
 import { supabase } from '../services/supabase'
 import type { RsvpDashboardStats } from '../services/rsvps'
 import type {
@@ -36,6 +36,7 @@ export default function AdminDashboardPage() {
   const [editForm, setEditForm] = useState<UpdateRsvpRecord | null>(null)
   const [editError, setEditError] = useState<string | null>(null)
   const [savingRsvpId, setSavingRsvpId] = useState<string | null>(null)
+  const [deletingRsvpId, setDeletingRsvpId] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -178,6 +179,39 @@ export default function AdminDashboardPage() {
       )
     } finally {
       setSavingRsvpId(null)
+    }
+  }
+
+  const handleDeleteRsvp = async (rsvp: RsvpRecord) => {
+    const shouldDelete = window.confirm(
+      `Delete RSVP for ${rsvp.first_name} ${rsvp.last_name}? This cannot be undone.`,
+    )
+
+    if (!shouldDelete) {
+      return
+    }
+
+    try {
+      setDeletingRsvpId(rsvp.id)
+      setEditError(null)
+
+      await deleteRsvp(rsvp.id)
+
+      setRsvps((currentRsvps) =>
+        currentRsvps.filter((currentRsvp) => currentRsvp.id !== rsvp.id),
+      )
+
+      if (editingRsvpId === rsvp.id) {
+        handleCancelEdit()
+      }
+
+      await refreshStats()
+    } catch (err) {
+      setEditError(
+        err instanceof Error ? err.message : 'Unable to delete this RSVP.',
+      )
+    } finally {
+      setDeletingRsvpId(null)
     }
   }
 
@@ -471,13 +505,26 @@ export default function AdminDashboardPage() {
                           </button>
                         </div>
                       ) : (
-                        <button
-                          type="button"
-                          className="admin-action-button"
-                          onClick={() => handleStartEdit(rsvp)}
-                        >
-                          Edit
-                        </button>
+                        <div className="admin-row-actions">
+                          <button
+                            type="button"
+                            className="admin-action-button"
+                            onClick={() => handleStartEdit(rsvp)}
+                            disabled={deletingRsvpId === rsvp.id}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            className="admin-action-button admin-action-danger"
+                            onClick={() => handleDeleteRsvp(rsvp)}
+                            disabled={deletingRsvpId === rsvp.id}
+                          >
+                            {deletingRsvpId === rsvp.id
+                              ? 'Deleting...'
+                              : 'Delete'}
+                          </button>
+                        </div>
                       )}
                     </td>
                   </tr>
