@@ -131,8 +131,8 @@ export default function AdminDashboardPage() {
       return 'Phone number is required.'
     }
 
-    if (totalGuests > 2) {
-      return 'Guest count cannot exceed 2.'
+    if (totalGuests > 6) {
+      return 'Guest count cannot exceed 6.'
     }
 
     if (form.attendance !== 'no' && totalGuests < 1) {

@@ -24,9 +24,9 @@ export const rsvpSchema = z.object({
   },
 ).refine(
   ({ maleGuestCount, femaleGuestCount, childGuestCount }) =>
-    maleGuestCount + femaleGuestCount + childGuestCount <= 2,
+    maleGuestCount + femaleGuestCount + childGuestCount <= 6,
   {
-    message: "Guest count cannot exceed 2.",
+    message: "Guest count cannot exceed 6.",
     path: ["maleGuestCount"],
   },
 );
