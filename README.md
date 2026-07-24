@@ -1,75 +1,84 @@
-# React + TypeScript + Vite
+# Birthday RSVP
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React, TypeScript, Vite, and Supabase app for collecting birthday party RSVPs and managing responses from a private admin dashboard.
 
-Currently, two official plugins are available:
+## Quick Start
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Install dependencies:
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Create `.env.local` in the project root:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+VITE_SUPABASE_URL=your-supabase-project-url
+VITE_SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-key
 ```
+
+3. Start the local app:
+
+```bash
+npm run dev
+```
+
+4. Open the local Vite URL shown in the terminal.
+
+## What This Project Is
+
+This is a single-page birthday RSVP site. Guests can submit their name, phone number, attendance status, party counts, and an optional message. Admin users can log in to view RSVP totals, edit responses, and delete entries.
+
+The app exists to provide a simple public RSVP experience while keeping the RSVP list and dashboard behind Supabase authentication and row-level security policies.
+
+## How It Runs
+
+The frontend runs in the browser with Vite and talks directly to Supabase using the publishable key.
+
+Main routes:
+
+- `/` - public birthday site and RSVP form
+- `/admin/login` - admin login
+- `/admin/dashboard` - authenticated RSVP dashboard
+
+Useful commands:
+
+```bash
+npm run dev       # start local development
+npm run build     # type-check and build for production
+npm run preview   # preview the production build locally
+npm run lint      # run ESLint
+npm run test      # run tests once
+npm run test:watch # run tests in watch mode
+```
+
+## How To Use It
+
+Guests use the public form on `/` to submit one RSVP party. A party can include up to 6 total attendees: 2 men, 2 women, and 2 children.
+
+Admins use `/admin/login` with a Supabase auth account. After logging in, `/admin/dashboard` shows response totals and the RSVP table. Admins can edit RSVP details or delete entries.
+
+## Supabase Requirements
+
+The app expects a `public.rsvps` table with columns matching the TypeScript types in `src/types/database.ts`.
+
+The public form inserts into `public.rsvps`, so RLS needs an `INSERT` policy for `anon` and, if admins may submit from the same browser session, `authenticated`.
+
+Recommended submit policy constraints:
+
+- `attendance` is `yes` or `no`
+- each guest category is between `0` and `2`
+- total guest count is between `1` and `6`
+- first name, last name, and phone are required
+- message is optional and no longer than `500` characters
+
+To prevent duplicate phone submissions, add a unique normalized-phone index:
+
+```sql
+create unique index rsvps_unique_normalized_phone
+on public.rsvps (
+  regexp_replace(phone, '\D', '', 'g')
+);
+```
+
+The admin dashboard also uses Supabase auth, `SELECT`, `UPDATE`, and `DELETE` policies on `public.rsvps`, plus the `get_rsvp_dashboard_stats` RPC.
