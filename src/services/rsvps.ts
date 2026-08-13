@@ -47,6 +47,7 @@ export async function createRsvp(input: RSVPInput): Promise<void> {
     female_guest_count: input.femaleGuestCount,
     child_guest_count: input.childGuestCount,
     message: input.message?.trim() || null,
+    table_id: null,
   }
 
   const { error } = await client.from('rsvps').insert(newRsvp)
@@ -71,6 +72,7 @@ export async function updateRsvp(
     female_guest_count: input.female_guest_count,
     child_guest_count: input.child_guest_count,
     message: input.message?.trim() || null,
+    table_id: input.table_id,
   }
 
   const { data, error } = await client
