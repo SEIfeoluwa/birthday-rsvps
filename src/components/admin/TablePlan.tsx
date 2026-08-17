@@ -10,7 +10,7 @@ import {
 } from '../../services/tables'
 import type { RsvpRecord, TablePlanRow, TableRecord } from '../../types/database'
 
-const emptyNewTable = { name: '', max_capacity: 8 }
+const emptyNewTable = { name: '', max_capacity: 12 }
 
 type TablePlanData = {
   tables: TableRecord[]

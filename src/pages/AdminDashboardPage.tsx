@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import GuestLookup from '../components/admin/GuestLookup'
 import TablePlan from '../components/admin/TablePlan'
 import { deleteRsvp, getRsvpDashboardStats, updateRsvp } from '../services/rsvps'
 import { supabase } from '../services/supabase'
@@ -13,8 +14,12 @@ import type {
 
 const guestCountOptions = Array.from({ length: 3 }, (_, count) => count)
 
-const adminTabs = ['RSVPs', 'Table Plan'] as const
+const adminTabs = ['RSVPs', 'Table Plan', 'Guest Lookup'] as const
 type AdminTab = (typeof adminTabs)[number]
+
+function formatPhoneDisplay(phone: string): string {
+  return phone.replace(/\D/g, '')
+}
 
 function toEditForm(rsvp: RsvpRecord): UpdateRsvpRecord {
   return {
@@ -43,6 +48,7 @@ export default function AdminDashboardPage() {
   const [savingRsvpId, setSavingRsvpId] = useState<string | null>(null)
   const [deletingRsvpId, setDeletingRsvpId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<AdminTab>('RSVPs')
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -239,6 +245,16 @@ export default function AdminDashboardPage() {
     return <div className="admin-error">Error: {error}</div>
   }
 
+  const normalizedQuery = searchQuery.trim().toLowerCase()
+  const filteredRsvps = normalizedQuery
+    ? rsvps.filter((rsvp) =>
+        [rsvp.first_name, rsvp.last_name, rsvp.phone]
+          .join(' ')
+          .toLowerCase()
+          .includes(normalizedQuery),
+      )
+    : rsvps
+
   return (
     <div className="admin-container">
       <h1 className="admin-title">Admin Dashboard</h1>
@@ -270,6 +286,8 @@ export default function AdminDashboardPage() {
 
       {activeTab === 'Table Plan' ? (
         <TablePlan />
+      ) : activeTab === 'Guest Lookup' ? (
+        <GuestLookup />
       ) : (
         <>
           {stats && (
@@ -308,6 +326,17 @@ export default function AdminDashboardPage() {
                 <h2>{stats.total_children}</h2>
                 <p>Children</p>
               </article>
+
+              <div className="admin-search">
+                <input
+                  type="search"
+                  className="admin-search-input"
+                  placeholder="Search by name or phone..."
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  aria-label="Search RSVPs"
+                />
+              </div>
             </section>
           )}
 
@@ -342,8 +371,8 @@ export default function AdminDashboardPage() {
               </thead>
 
               <tbody>
-                {rsvps.length > 0 ? (
-                  rsvps.map((rsvp) => {
+                {filteredRsvps.length > 0 ? (
+                  filteredRsvps.map((rsvp) => {
                     const isEditing = editingRsvpId === rsvp.id && editForm
                     const editGuestTotal = editForm
                       ? editForm.male_guest_count +
@@ -393,8 +422,10 @@ export default function AdminDashboardPage() {
                               }
                               aria-label="Phone"
                             />
+                          ) : rsvp.phone ? (
+                            formatPhoneDisplay(rsvp.phone)
                           ) : (
-                            rsvp.phone || 'N/A'
+                            'N/A'
                           )}
                         </td>
 
@@ -562,7 +593,9 @@ export default function AdminDashboardPage() {
                 ) : (
                   <tr>
                     <td colSpan={10} className="no-data">
-                      No RSVPs found
+                      {normalizedQuery
+                        ? 'No RSVPs match your search'
+                        : 'No RSVPs found'}
                     </td>
                   </tr>
                 )}
