@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import TablePlan from '../components/admin/TablePlan'
 import { deleteRsvp, getRsvpDashboardStats, updateRsvp } from '../services/rsvps'
 import { supabase } from '../services/supabase'
 import type { RsvpDashboardStats } from '../services/rsvps'
@@ -12,6 +13,9 @@ import type {
 
 const guestCountOptions = Array.from({ length: 3 }, (_, count) => count)
 
+const adminTabs = ['RSVPs', 'Table Plan'] as const
+type AdminTab = (typeof adminTabs)[number]
+
 function toEditForm(rsvp: RsvpRecord): UpdateRsvpRecord {
   return {
     first_name: rsvp.first_name,
@@ -22,6 +26,7 @@ function toEditForm(rsvp: RsvpRecord): UpdateRsvpRecord {
     female_guest_count: rsvp.female_guest_count,
     child_guest_count: rsvp.child_guest_count,
     message: rsvp.message,
+    table_id: rsvp.table_id,
   }
 }
 
@@ -37,6 +42,7 @@ export default function AdminDashboardPage() {
   const [editError, setEditError] = useState<string | null>(null)
   const [savingRsvpId, setSavingRsvpId] = useState<string | null>(null)
   const [deletingRsvpId, setDeletingRsvpId] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<AdminTab>('RSVPs')
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -235,314 +241,340 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="admin-container">
-      <div className="admin-header">
-        <h1 className="admin-title">Admin Dashboard</h1>
+      <h1 className="admin-title">Admin Dashboard</h1>
 
-        <button type="button" onClick={handleLogout}>
+      <div className="admin-tabbar">
+        <div className="admin-tablist" role="tablist">
+          {adminTabs.map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab}
+              className={`admin-tab${activeTab === tab ? ' admin-tab-active' : ''}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          className="admin-tabbar-logout"
+          onClick={handleLogout}
+        >
           Log Out
         </button>
       </div>
 
-      {stats && (
-        <section className="dashboard-stats dashboard-stats-full">
-          <article className="stat-card">
-            <h2>{stats.total_responses}</h2>
-            <p>Total Responses</p>
-          </article>
+      {activeTab === 'Table Plan' ? (
+        <TablePlan />
+      ) : (
+        <>
+          {stats && (
+            <section className="dashboard-stats dashboard-stats-full">
+              <article className="stat-card">
+                <h2>{stats.total_responses}</h2>
+                <p>Total Responses</p>
+              </article>
 
-          <article className="stat-card">
-            <h2>{stats.yes_responses}</h2>
-            <p>Yes Responses</p>
-          </article>
+              <article className="stat-card">
+                <h2>{stats.yes_responses}</h2>
+                <p>Yes Responses</p>
+              </article>
 
-          <article className="stat-card">
-            <h2>{stats.no_responses}</h2>
-            <p>No Responses</p>
-          </article>
+              <article className="stat-card">
+                <h2>{stats.no_responses}</h2>
+                <p>No Responses</p>
+              </article>
 
-          <article className="stat-card">
-            <h2>{stats.total_attending_guests}</h2>
-            <p>Total Guests Attending</p>
-          </article>
+              <article className="stat-card">
+                <h2>{stats.total_attending_guests}</h2>
+                <p>Total Guests Attending</p>
+              </article>
 
-          <article className="stat-card">
-            <h2>{stats.total_men}</h2>
-            <p>Men</p>
-          </article>
+              <article className="stat-card">
+                <h2>{stats.total_men}</h2>
+                <p>Men</p>
+              </article>
 
-          <article className="stat-card">
-            <h2>{stats.total_women}</h2>
-            <p>Women</p>
-          </article>
+              <article className="stat-card">
+                <h2>{stats.total_women}</h2>
+                <p>Women</p>
+              </article>
 
-          <article className="stat-card">
-            <h2>{stats.total_children}</h2>
-            <p>Children</p>
-          </article>
-        </section>
-      )}
+              <article className="stat-card">
+                <h2>{stats.total_children}</h2>
+                <p>Children</p>
+              </article>
+            </section>
+          )}
 
-      <div className="admin-table-wrapper">
-        <table className="admin-table">
-          <colgroup>
-            <col className="admin-col-name" />
-            <col className="admin-col-name" />
-            <col className="admin-col-phone" />
-            <col className="admin-col-status" />
-            <col className="admin-col-count" />
-            <col className="admin-col-count" />
-            <col className="admin-col-count" />
-            <col className="admin-col-total" />
-            <col className="admin-col-message" />
-            <col className="admin-col-actions" />
-          </colgroup>
+          <div className="admin-table-wrapper">
+            <table className="admin-table">
+              <colgroup>
+                <col className="admin-col-name" />
+                <col className="admin-col-name" />
+                <col className="admin-col-phone" />
+                <col className="admin-col-status" />
+                <col className="admin-col-count" />
+                <col className="admin-col-count" />
+                <col className="admin-col-count" />
+                <col className="admin-col-total" />
+                <col className="admin-col-message" />
+                <col className="admin-col-actions" />
+              </colgroup>
 
-          <thead>
-            <tr>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Phone</th>
-              <th>Attendance</th>
-              <th>Men</th>
-              <th>Women</th>
-              <th>Children</th>
-              <th>Total Guests</th>
-              <th>Message</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+              <thead>
+                <tr>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Phone</th>
+                  <th>Attendance</th>
+                  <th>Men</th>
+                  <th>Women</th>
+                  <th>Children</th>
+                  <th>Total Guests</th>
+                  <th>Message</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
 
-          <tbody>
-            {rsvps.length > 0 ? (
-              rsvps.map((rsvp) => {
-                const isEditing = editingRsvpId === rsvp.id && editForm
-                const editGuestTotal = editForm
-                  ? editForm.male_guest_count +
-                    editForm.female_guest_count +
-                    editForm.child_guest_count
-                  : rsvp.guest_count
+              <tbody>
+                {rsvps.length > 0 ? (
+                  rsvps.map((rsvp) => {
+                    const isEditing = editingRsvpId === rsvp.id && editForm
+                    const editGuestTotal = editForm
+                      ? editForm.male_guest_count +
+                        editForm.female_guest_count +
+                        editForm.child_guest_count
+                      : rsvp.guest_count
 
-                return (
-                  <tr key={rsvp.id}>
-                    <td>
-                      {isEditing ? (
-                        <input
-                          className="admin-table-input"
-                          value={editForm.first_name}
-                          onChange={(event) =>
-                            updateEditField('first_name', event.target.value)
-                          }
-                          aria-label="First name"
-                        />
-                      ) : (
-                        rsvp.first_name
-                      )}
-                    </td>
+                    return (
+                      <tr key={rsvp.id}>
+                        <td>
+                          {isEditing ? (
+                            <input
+                              className="admin-table-input"
+                              value={editForm.first_name}
+                              onChange={(event) =>
+                                updateEditField('first_name', event.target.value)
+                              }
+                              aria-label="First name"
+                            />
+                          ) : (
+                            rsvp.first_name
+                          )}
+                        </td>
 
-                    <td>
-                      {isEditing ? (
-                        <input
-                          className="admin-table-input"
-                          value={editForm.last_name}
-                          onChange={(event) =>
-                            updateEditField('last_name', event.target.value)
-                          }
-                          aria-label="Last name"
-                        />
-                      ) : (
-                        rsvp.last_name
-                      )}
-                    </td>
+                        <td>
+                          {isEditing ? (
+                            <input
+                              className="admin-table-input"
+                              value={editForm.last_name}
+                              onChange={(event) =>
+                                updateEditField('last_name', event.target.value)
+                              }
+                              aria-label="Last name"
+                            />
+                          ) : (
+                            rsvp.last_name
+                          )}
+                        </td>
 
-                    <td>
-                      {isEditing ? (
-                        <input
-                          className="admin-table-input"
-                          value={editForm.phone}
-                          onChange={(event) =>
-                            updateEditField('phone', event.target.value)
-                          }
-                          aria-label="Phone"
-                        />
-                      ) : (
-                        rsvp.phone || 'N/A'
-                      )}
-                    </td>
+                        <td>
+                          {isEditing ? (
+                            <input
+                              className="admin-table-input"
+                              value={editForm.phone}
+                              onChange={(event) =>
+                                updateEditField('phone', event.target.value)
+                              }
+                              aria-label="Phone"
+                            />
+                          ) : (
+                            rsvp.phone || 'N/A'
+                          )}
+                        </td>
 
-                    <td>
-                      {isEditing ? (
-                        <select
-                          className="admin-table-input"
-                          value={editForm.attendance}
-                          onChange={(event) =>
-                            updateEditField(
-                              'attendance',
-                              event.target.value as AttendanceStatus,
-                            )
-                          }
-                          aria-label="Attendance"
-                        >
-                          <option value="yes">Yes</option>
-                          <option value="no">No</option>
-                        </select>
-                      ) : (
-                        <span
-                          className={`attendance-badge attendance-${rsvp.attendance}`}
-                        >
-                          {rsvp.attendance}
-                        </span>
-                      )}
-                    </td>
+                        <td>
+                          {isEditing ? (
+                            <select
+                              className="admin-table-input"
+                              value={editForm.attendance}
+                              onChange={(event) =>
+                                updateEditField(
+                                  'attendance',
+                                  event.target.value as AttendanceStatus,
+                                )
+                              }
+                              aria-label="Attendance"
+                            >
+                              <option value="yes">Yes</option>
+                              <option value="no">No</option>
+                            </select>
+                          ) : (
+                            <span
+                              className={`attendance-badge attendance-${rsvp.attendance}`}
+                            >
+                              {rsvp.attendance}
+                            </span>
+                          )}
+                        </td>
 
-                    <td>
-                      {isEditing ? (
-                        <select
-                          className="admin-table-input admin-count-input"
-                          value={editForm.male_guest_count}
-                          onChange={(event) =>
-                            updateEditField(
-                              'male_guest_count',
-                              Number(event.target.value),
-                            )
-                          }
-                          aria-label="Men"
-                        >
-                          {guestCountOptions.map((count) => (
-                            <option key={count} value={count}>
-                              {count}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        rsvp.male_guest_count
-                      )}
-                    </td>
+                        <td>
+                          {isEditing ? (
+                            <select
+                              className="admin-table-input admin-count-input"
+                              value={editForm.male_guest_count}
+                              onChange={(event) =>
+                                updateEditField(
+                                  'male_guest_count',
+                                  Number(event.target.value),
+                                )
+                              }
+                              aria-label="Men"
+                            >
+                              {guestCountOptions.map((count) => (
+                                <option key={count} value={count}>
+                                  {count}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            rsvp.male_guest_count
+                          )}
+                        </td>
 
-                    <td>
-                      {isEditing ? (
-                        <select
-                          className="admin-table-input admin-count-input"
-                          value={editForm.female_guest_count}
-                          onChange={(event) =>
-                            updateEditField(
-                              'female_guest_count',
-                              Number(event.target.value),
-                            )
-                          }
-                          aria-label="Women"
-                        >
-                          {guestCountOptions.map((count) => (
-                            <option key={count} value={count}>
-                              {count}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        rsvp.female_guest_count
-                      )}
-                    </td>
+                        <td>
+                          {isEditing ? (
+                            <select
+                              className="admin-table-input admin-count-input"
+                              value={editForm.female_guest_count}
+                              onChange={(event) =>
+                                updateEditField(
+                                  'female_guest_count',
+                                  Number(event.target.value),
+                                )
+                              }
+                              aria-label="Women"
+                            >
+                              {guestCountOptions.map((count) => (
+                                <option key={count} value={count}>
+                                  {count}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            rsvp.female_guest_count
+                          )}
+                        </td>
 
-                    <td>
-                      {isEditing ? (
-                        <select
-                          className="admin-table-input admin-count-input"
-                          value={editForm.child_guest_count}
-                          onChange={(event) =>
-                            updateEditField(
-                              'child_guest_count',
-                              Number(event.target.value),
-                            )
-                          }
-                          aria-label="Children"
-                        >
-                          {guestCountOptions.map((count) => (
-                            <option key={count} value={count}>
-                              {count}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        rsvp.child_guest_count
-                      )}
-                    </td>
+                        <td>
+                          {isEditing ? (
+                            <select
+                              className="admin-table-input admin-count-input"
+                              value={editForm.child_guest_count}
+                              onChange={(event) =>
+                                updateEditField(
+                                  'child_guest_count',
+                                  Number(event.target.value),
+                                )
+                              }
+                              aria-label="Children"
+                            >
+                              {guestCountOptions.map((count) => (
+                                <option key={count} value={count}>
+                                  {count}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            rsvp.child_guest_count
+                          )}
+                        </td>
 
-                    <td className="guest-count">{editGuestTotal}</td>
+                        <td className="guest-count">{editGuestTotal}</td>
 
-                    <td className="message-cell">
-                      {isEditing ? (
-                        <textarea
-                          className="admin-table-input admin-message-input"
-                          value={editForm.message ?? ''}
-                          onChange={(event) =>
-                            updateEditField('message', event.target.value)
-                          }
-                          aria-label="Message"
-                          rows={3}
-                        />
-                      ) : (
-                        rsvp.message || 'No message'
-                      )}
-                    </td>
+                        <td className="message-cell">
+                          {isEditing ? (
+                            <textarea
+                              className="admin-table-input admin-message-input"
+                              value={editForm.message ?? ''}
+                              onChange={(event) =>
+                                updateEditField('message', event.target.value)
+                              }
+                              aria-label="Message"
+                              rows={3}
+                            />
+                          ) : (
+                            rsvp.message || 'No message'
+                          )}
+                        </td>
 
-                    <td>
-                      {isEditing ? (
-                        <div className="admin-row-actions">
-                          <button
-                            type="button"
-                            className="admin-action-button"
-                            onClick={() => handleSaveEdit(rsvp.id)}
-                            disabled={savingRsvpId === rsvp.id}
-                          >
-                            {savingRsvpId === rsvp.id ? 'Saving...' : 'Save'}
-                          </button>
-                          <button
-                            type="button"
-                            className="admin-action-button admin-action-secondary"
-                            onClick={handleCancelEdit}
-                            disabled={savingRsvpId === rsvp.id}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="admin-row-actions">
-                          <button
-                            type="button"
-                            className="admin-action-button"
-                            onClick={() => handleStartEdit(rsvp)}
-                            disabled={deletingRsvpId === rsvp.id}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            className="admin-action-button admin-action-danger"
-                            onClick={() => handleDeleteRsvp(rsvp)}
-                            disabled={deletingRsvpId === rsvp.id}
-                          >
-                            {deletingRsvpId === rsvp.id
-                              ? 'Deleting...'
-                              : 'Delete'}
-                          </button>
-                        </div>
-                      )}
+                        <td>
+                          {isEditing ? (
+                            <div className="admin-row-actions">
+                              <button
+                                type="button"
+                                className="admin-action-button"
+                                onClick={() => handleSaveEdit(rsvp.id)}
+                                disabled={savingRsvpId === rsvp.id}
+                              >
+                                {savingRsvpId === rsvp.id ? 'Saving...' : 'Save'}
+                              </button>
+                              <button
+                                type="button"
+                                className="admin-action-button admin-action-secondary"
+                                onClick={handleCancelEdit}
+                                disabled={savingRsvpId === rsvp.id}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="admin-row-actions">
+                              <button
+                                type="button"
+                                className="admin-action-button"
+                                onClick={() => handleStartEdit(rsvp)}
+                                disabled={deletingRsvpId === rsvp.id}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                type="button"
+                                className="admin-action-button admin-action-danger"
+                                onClick={() => handleDeleteRsvp(rsvp)}
+                                disabled={deletingRsvpId === rsvp.id}
+                              >
+                                {deletingRsvpId === rsvp.id
+                                  ? 'Deleting...'
+                                  : 'Delete'}
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={10} className="no-data">
+                      No RSVPs found
                     </td>
                   </tr>
-                )
-              })
-            ) : (
-              <tr>
-                <td colSpan={10} className="no-data">
-                  No RSVPs found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                )}
+              </tbody>
+            </table>
+          </div>
 
-      {editError && <div className="admin-edit-error">Error: {editError}</div>}
-
+          {editError && (
+            <div className="admin-edit-error">Error: {editError}</div>
+          )}
+        </>
+      )}
     </div>
   )
 }
