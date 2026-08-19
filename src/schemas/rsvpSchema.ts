@@ -10,6 +10,7 @@ export const rsvpSchema = z.object({
     firstName: z.string().trim().min(1, "Enter your first name."),
     lastName: z.string().trim().min(1, "Enter your last name."),
     phone: z.string().trim().min(1, "Enter your phone number."),
+    smsConsent: z.boolean().default(false),
     attendance: z.enum(["yes", "no"], { error: "Select your attendance." }),
     maleGuestCount: guestCountSchema,
     femaleGuestCount: guestCountSchema,

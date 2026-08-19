@@ -26,6 +26,7 @@ function toEditForm(rsvp: RsvpRecord): UpdateRsvpRecord {
     first_name: rsvp.first_name,
     last_name: rsvp.last_name,
     phone: rsvp.phone,
+    sms_consent: rsvp.sms_consent,
     attendance: rsvp.attendance,
     male_guest_count: rsvp.male_guest_count,
     female_guest_count: rsvp.female_guest_count,
@@ -346,6 +347,7 @@ export default function AdminDashboardPage() {
                 <col className="admin-col-name" />
                 <col className="admin-col-name" />
                 <col className="admin-col-phone" />
+                <col className="admin-col-sms-consent" />
                 <col className="admin-col-status" />
                 <col className="admin-col-count" />
                 <col className="admin-col-count" />
@@ -360,6 +362,7 @@ export default function AdminDashboardPage() {
                   <th>First Name</th>
                   <th>Last Name</th>
                   <th>Phone</th>
+                  <th>SMS</th>
                   <th>Attendance</th>
                   <th>Men</th>
                   <th>Women</th>
@@ -426,6 +429,23 @@ export default function AdminDashboardPage() {
                             formatPhoneDisplay(rsvp.phone)
                           ) : (
                             'N/A'
+                          )}
+                        </td>
+
+                        <td>
+                          {isEditing ? (
+                            <input
+                              type="checkbox"
+                              checked={editForm.sms_consent}
+                              onChange={(event) =>
+                                updateEditField('sms_consent', event.target.checked)
+                              }
+                              aria-label="SMS consent"
+                            />
+                          ) : rsvp.sms_consent ? (
+                            'Yes'
+                          ) : (
+                            'No'
                           )}
                         </td>
 
@@ -592,7 +612,7 @@ export default function AdminDashboardPage() {
                   })
                 ) : (
                   <tr>
-                    <td colSpan={10} className="no-data">
+                    <td colSpan={11} className="no-data">
                       {normalizedQuery
                         ? 'No RSVPs match your search'
                         : 'No RSVPs found'}

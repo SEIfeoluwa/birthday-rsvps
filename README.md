@@ -27,7 +27,7 @@ npm run dev
 
 ## What This Project Is
 
-This is a single-page birthday RSVP site. Guests can submit their name, phone number, attendance status, party counts, and an optional message. Admin users can log in to view RSVP totals, edit responses, and delete entries.
+This is a single-page birthday RSVP site. Guests can submit their name, phone number, attendance status, party counts, an optional message, and an optional SMS consent opt-in. Admin users can log in to view RSVP totals, edit responses, and delete entries.
 
 The app exists to provide a simple public RSVP experience while keeping the RSVP list and dashboard behind Supabase authentication and row-level security policies.
 
@@ -70,6 +70,7 @@ Recommended submit policy constraints:
 - each guest category is between `0` and `2`
 - total guest count is between `1` and `6`
 - first name, last name, and phone are required
+- `sms_consent` is a boolean, defaults to `false`, and is optional (guests are not required to opt in)
 - message is optional and no longer than `500` characters
 
 To prevent duplicate phone submissions, add a unique normalized-phone index:

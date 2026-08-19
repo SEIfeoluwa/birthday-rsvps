@@ -1,8 +1,11 @@
 import { useState } from 'react'
 
+import Modal from '../common/Modal'
 import { createRsvp } from '../../services/rsvps'
 import { rsvpSchema } from '../../schemas/rsvpSchema'
 import type { RSVPInput } from '../../schemas/rsvpSchema'
+
+type LegalModal = 'terms' | 'privacy' | null
 
 interface RsvpProps {
   onRsvpClick?: () => void
@@ -18,6 +21,7 @@ const initialFormData: FormData = {
   firstName: '',
   lastName: '',
   phone: '',
+  smsConsent: false,
   attendance: '',
   maleGuestCount: 0,
   femaleGuestCount: 0,
@@ -38,13 +42,14 @@ export default function Rsvp({ onRsvpClick }: RsvpProps) {
     error: null,
     success: null,
   })
+  const [activeModal, setActiveModal] = useState<LegalModal>(null)
 
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    const { name, value } = e.target
+    const { name, value, type } = e.target
     const numericFields = [
       'maleGuestCount',
       'femaleGuestCount',
@@ -53,7 +58,12 @@ export default function Rsvp({ onRsvpClick }: RsvpProps) {
 
     setFormData((prev) => ({
       ...prev,
-      [name]: numericFields.includes(name) ? Number(value) : value,
+      [name]:
+        type === 'checkbox'
+          ? (e.target as HTMLInputElement).checked
+          : numericFields.includes(name)
+            ? Number(value)
+            : value,
     }))
   }
 
@@ -226,6 +236,42 @@ export default function Rsvp({ onRsvpClick }: RsvpProps) {
           </div>
         </div>
 
+        <div className="form-row">
+          <div className="form-group full-width form-group-checkbox">
+            <label htmlFor="smsConsent">
+              <input
+                type="checkbox"
+                id="smsConsent"
+                name="smsConsent"
+                checked={formData.smsConsent}
+                onChange={handleChange}
+              />
+              I consent to receive text messages from the Fayemi family about
+              this event, including updates and reminders. Message frequency
+              may vary. Message & data rates may apply. Reply STOP to opt
+              out, HELP for help.
+            </label>
+
+            <p className="form-legal-links">
+              <button
+                type="button"
+                className="form-legal-link"
+                onClick={() => setActiveModal('terms')}
+              >
+                Terms of Service
+              </button>
+              {' & '}
+              <button
+                type="button"
+                className="form-legal-link"
+                onClick={() => setActiveModal('privacy')}
+              >
+                Privacy Policy
+              </button>
+            </p>
+          </div>
+        </div>
+
         {formState.error && <p className="form-status form-status-error">{formState.error}</p>}
         {formState.success && <p className="form-status form-status-success">{formState.success}</p>}
 
@@ -233,6 +279,61 @@ export default function Rsvp({ onRsvpClick }: RsvpProps) {
           {formState.submitting ? 'Submitting...' : 'Submit RSVP'}
         </button>
       </form>
+
+      {activeModal === 'terms' && (
+        <Modal title="Terms of Service" onClose={() => setActiveModal(null)}>
+          <p>
+            By submitting this RSVP, you confirm that the information you
+            provide is accurate and that you are submitting on behalf of
+            yourself and the guests listed in your party.
+          </p>
+          <p>
+            <strong>SMS Program.</strong> If you check the SMS consent box,
+            you agree to receive text messages from the Fayemi family at the
+            phone number you provided, related to this event (such as date
+            reminders, schedule changes, or logistics updates). Message
+            frequency may vary. Message and data rates may apply based on
+            your carrier and plan. Consent to receive texts is not required
+            to submit your RSVP.
+          </p>
+          <p>
+            You can opt out of text messages at any time by replying STOP to
+            any message. Reply HELP for assistance.
+          </p>
+          <p>
+            RSVP entries may be edited or removed by the event organizers,
+            including to correct guest counts or contact details.
+          </p>
+        </Modal>
+      )}
+
+      {activeModal === 'privacy' && (
+        <Modal title="Privacy Policy" onClose={() => setActiveModal(null)}>
+          <p>
+            The Fayemi family collects the information submitted through
+            this form, including your name, phone number, attendance
+            status, guest counts, and any message you provide, solely to
+            plan and manage this event.
+          </p>
+          <p>
+            <strong>SMS consent.</strong> If you opt in to receive text
+            messages, your phone number is used only to send you updates
+            related to this event. Your phone number and SMS consent status
+            are not shared with third parties or used for marketing
+            purposes.
+          </p>
+          <p>
+            Your information is not sold, rented, or shared outside of what
+            is necessary to plan this event (for example, coordinating
+            seating or catering counts), and is retained only for as long
+            as needed for that purpose.
+          </p>
+          <p>
+            If you have questions about your information or would like it
+            removed, please contact the Fayemi family directly.
+          </p>
+        </Modal>
+      )}
     </section>
   )
 }

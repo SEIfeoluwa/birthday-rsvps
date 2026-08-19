@@ -5,6 +5,7 @@ export type RsvpRecord = {
   first_name: string
   last_name: string
   phone: string
+  sms_consent: boolean
   attendance: AttendanceStatus
   guest_count: number
   male_guest_count: number
