@@ -246,10 +246,13 @@ export default function Rsvp({ onRsvpClick }: RsvpProps) {
                 checked={formData.smsConsent}
                 onChange={handleChange}
               />
-              I consent to receive text messages from the Fayemi family about
-              this event, including updates and reminders. Message frequency
-              may vary. Message & data rates may apply. Reply STOP to opt
-              out, HELP for help.
+              <span>
+                <strong>SMS updates (optional):</strong> I consent to receive
+                text messages from the Fayemi family about this event,
+                including updates and reminders. Message frequency may vary.
+                Message & data rates may apply. Reply STOP to opt out, HELP
+                for help. This is not required to submit your RSVP.
+              </span>
             </label>
 
             <p className="form-legal-links">
@@ -316,7 +319,8 @@ export default function Rsvp({ onRsvpClick }: RsvpProps) {
             plan and manage this event.
           </p>
           <p>
-            <strong>SMS consent.</strong> If you opt in to receive text
+            <strong>SMS consent.</strong> SMS consent is optional and is not
+            required to submit your RSVP. If you opt in to receive text
             messages, your phone number is used only to send you updates
             related to this event. Your phone number and SMS consent status
             are not shared with third parties or used for marketing

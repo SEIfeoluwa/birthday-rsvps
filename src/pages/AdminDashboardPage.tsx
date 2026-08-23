@@ -21,6 +21,12 @@ function formatPhoneDisplay(phone: string): string {
   return phone.replace(/\D/g, '')
 }
 
+function formatNameDisplay(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+}
+
 function toEditForm(rsvp: RsvpRecord): UpdateRsvpRecord {
   return {
     first_name: rsvp.first_name,
@@ -411,7 +417,7 @@ export default function AdminDashboardPage() {
                               aria-label="Last name"
                             />
                           ) : (
-                            rsvp.last_name
+                            formatNameDisplay(rsvp.last_name)
                           )}
                         </td>
 
