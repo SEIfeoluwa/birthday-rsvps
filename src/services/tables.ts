@@ -107,3 +107,34 @@ export async function assignRsvpToTable(
 
   return data as RsvpRecord
 }
+
+export type TableLookupResult = {
+  firstName: string
+  lastName: string
+  partySize: number
+  tableId: string | null
+  tableName: string | null
+}
+
+type FindMyTableRow = {
+  first_name: string
+  last_name: string
+  party_size: number
+  table_id: string | null
+  table_name: string | null
+}
+
+export async function findMyTable(searchName: string): Promise<TableLookupResult[]> {
+  const client = getSupabaseClient()
+  const { data, error } = await client.rpc('find_my_table', { search_name: searchName })
+
+  if (error) throw error
+
+  return ((data ?? []) as FindMyTableRow[]).map((row) => ({
+    firstName: row.first_name,
+    lastName: row.last_name,
+    partySize: row.party_size,
+    tableId: row.table_id,
+    tableName: row.table_name
+  }))
+}
