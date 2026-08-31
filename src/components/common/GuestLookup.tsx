@@ -1,61 +1,107 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import { findMyTable } from '../../services/rsvps'
-import type { TableLookupResult } from '../../services/rsvps'
+import { findMyTable } from '../../services/tables'
+import type { TableLookupResult } from '../../services/tables'
+
+const MIN_QUERY_LENGTH = 2
+const DEBOUNCE_MS = 350
 
 export default function GuestLookup() {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<TableLookupResult[]>([])
-  const [searched, setSearched] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const requestIdRef = useRef(0)
 
-  const handleSearch = async (event: React.FormEvent) => {
-    event.preventDefault()
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value
+    setQuery(value)
 
+    requestIdRef.current += 1
+
+    if (value.trim().length < MIN_QUERY_LENGTH) {
+      setLoading(false)
+      setError(null)
+      setResults([])
+    } else {
+      setLoading(true)
+    }
+  }
+
+  useEffect(() => {
     const trimmedQuery = query.trim()
-    if (!trimmedQuery) {
+
+    if (trimmedQuery.length < MIN_QUERY_LENGTH) {
       return
     }
 
-    try {
-      setLoading(true)
-      setError(null)
+    const requestId = requestIdRef.current
 
-      const matches = await findMyTable(trimmedQuery)
+    const timeoutId = window.setTimeout(async () => {
+      try {
+        const matches = await findMyTable(trimmedQuery)
 
-      setResults(matches)
-      setSearched(true)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to search for your RSVP.')
-    } finally {
-      setLoading(false)
-    }
-  }
+        if (requestIdRef.current !== requestId) {
+          return
+        }
+
+        setResults(matches)
+        setError(null)
+      } catch (err) {
+        if (requestIdRef.current !== requestId) {
+          return
+        }
+
+        setError(err instanceof Error ? err.message : 'Unable to search for your RSVP.')
+        setResults([])
+      } finally {
+        if (requestIdRef.current === requestId) {
+          setLoading(false)
+        }
+      }
+    }, DEBOUNCE_MS)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [query])
+
+  const hasSearched = query.trim().length >= MIN_QUERY_LENGTH
 
   return (
     <div className="guest-lookup">
       <section className="guest-lookup-section">
         <div className="guest-lookup-content">
+          <p className="guest-lookup-eyebrow">
+            Fayemi Celebration <span aria-hidden="true">&bull;</span> September 19, 2026
+          </p>
           <h2>Find Your Seat</h2>
-          <p>Enter your full name to see where you&rsquo;re seated.</p>
+          <p className="guest-lookup-subtitle">
+            Search your full name or number to find you&rsquo;re your table for the evening.
+          </p>
+        </div>
+      </section>
 
-          <form className="guest-lookup-form" onSubmit={handleSearch}>
+      <section className="guest-lookup-search">
+        <div className="guest-lookup-search-content">
+          <label htmlFor="guestLookupQuery" className="guest-lookup-label">
+            Your Name
+          </label>
+
+          <div className="guest-lookup-form">
             <input
+              id="guestLookupQuery"
               type="text"
-              placeholder="First or last name"
+              placeholder="Begin typing your name..."
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={handleQueryChange}
               aria-label="First or last name"
             />
-            <button type="submit" disabled={loading}>
-              {loading ? 'Searching...' : 'Find My Seat'}
-            </button>
-          </form>
+          </div>
 
-          {error && <p className="guest-lookup-message">{error}</p>}
+          {loading && <p className="guest-lookup-message">Searching...</p>}
 
-          {!error && searched && (
+          {!loading && error && <p className="guest-lookup-message">{error}</p>}
+
+          {!loading && !error && hasSearched && (
             <div className="guest-lookup-results">
               {results.length === 0 && (
                 <p className="guest-lookup-message">

@@ -14,7 +14,7 @@ export default function App() {
       <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
       <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
-      <Route path="/guest-lookup" element={<GuestLookupPage />} />
+      <Route path="/rsvp-lookup-f11c247f" element={<GuestLookupPage />} />
     </Routes>
   )
 }
