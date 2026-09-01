@@ -7,6 +7,8 @@ import type { RSVPInput } from '../../schemas/rsvpSchema'
 
 type LegalModal = 'terms' | 'privacy' | null
 
+const RSVP_CLOSED = true
+
 interface RsvpProps {
   onRsvpClick?: () => void
 }
@@ -100,11 +102,23 @@ export default function Rsvp({ onRsvpClick }: RsvpProps) {
     }
   }
 
+  if (RSVP_CLOSED) {
+    return (
+      <section className="rsvp-form" id="rsvp-form-section">
+        <h2>RSVPs Have Closed</h2>
+        <p>
+          Thank you to everyone who responded. We are no longer accepting
+          new RSVPs or changes. We can&rsquo;t wait to celebrate with you!
+        </p>
+      </section>
+    )
+  }
+
   return (
     <section className="rsvp-form" id="rsvp-form-section">
       <h2>Will you be attending?</h2>
       <p>Please respond by August 19</p>
-      
+
       <form onSubmit={handleSubmit} className="rsvp-form-container">
         <div className="form-row rsvp-contact-row">
           <div className="form-group">
