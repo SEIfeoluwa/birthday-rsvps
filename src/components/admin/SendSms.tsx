@@ -5,6 +5,7 @@ import type { SendSmsResult } from '../../services/sms'
 import { supabase } from '../../services/supabase'
 
 const MAX_MESSAGE_LENGTH = 1600
+const SENDING_DISABLED = true
 
 async function loadRecipientCount(): Promise<number> {
   if (!supabase) {
@@ -47,7 +48,10 @@ export default function SendSms() {
   }, [])
 
   const trimmedMessage = message.trim()
-  const canSend = trimmedMessage.length > 0 && trimmedMessage.length <= MAX_MESSAGE_LENGTH
+  const canSend =
+    !SENDING_DISABLED &&
+    trimmedMessage.length > 0 &&
+    trimmedMessage.length <= MAX_MESSAGE_LENGTH
 
   const handleSend = async () => {
     if (!canSend) {
@@ -99,6 +103,12 @@ export default function SendSms() {
           aria-label="Message body"
           disabled={sending}
         />
+
+        {SENDING_DISABLED && (
+          <p className="sms-recipient-note">
+            Sending is temporarily disabled while this feature is being tested.
+          </p>
+        )}
 
         <div className="sms-compose-footer">
           <span
