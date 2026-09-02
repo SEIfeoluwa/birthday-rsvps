@@ -1390,6 +1390,66 @@ button {
   text-align: center;
 }
 
+.sms-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 640px;
+}
+
+.sms-compose {
+  padding: 18px;
+  border: 1px solid rgba(7, 21, 45, 0.12);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.38);
+
+  h2 {
+    margin: 0 0 4px;
+    color: var(--event-navy);
+  }
+}
+
+.sms-recipient-note {
+  margin: 0 0 12px;
+  color: rgba(7, 21, 45, 0.65);
+  font-size: 13px;
+}
+
+.sms-textarea {
+  width: 100%;
+}
+
+.sms-compose-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.sms-char-count {
+  color: rgba(7, 21, 45, 0.55);
+  font-size: 13px;
+}
+
+.sms-char-count-over {
+  color: #991b1b;
+  font-weight: 700;
+}
+
+.sms-result {
+  padding: 12px;
+  border: 1px solid rgba(7, 21, 45, 0.12);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.sms-failure-list {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: #991b1b;
+  font-size: 13px;
+}
+
 @media (max-width: 900px) {
   .dashboard-stats-full {
     grid-template-columns: repeat(2, minmax(0, 1fr));

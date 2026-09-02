@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import SendSms from '../components/admin/SendSms'
 import TablePlan from '../components/admin/TablePlan'
 import { deleteRsvp, getRsvpDashboardStats, updateRsvp } from '../services/rsvps'
 import { supabase } from '../services/supabase'
@@ -13,7 +14,7 @@ import type {
 
 const guestCountOptions = Array.from({ length: 3 }, (_, count) => count)
 
-const adminTabs = ['RSVPs', 'Table Plan'] as const
+const adminTabs = ['RSVPs', 'Table Plan', 'Send SMS'] as const
 type AdminTab = (typeof adminTabs)[number]
 
 function formatPhoneDisplay(phone: string): string {
@@ -292,6 +293,8 @@ export default function AdminDashboardPage() {
 
       {activeTab === 'Table Plan' ? (
         <TablePlan />
+      ) : activeTab === 'Send SMS' ? (
+        <SendSms />
       ) : (
         <>
           {stats && (
