@@ -35,7 +35,7 @@ function getRsvpSubmissionErrorMessage(error: { code?: string; message: string }
   return 'We could not submit your RSVP right now. Please try again later.'
 }
 
-export async function createRsvp(input: RSVPInput): Promise<void> {
+export async function createRsvp(input: RSVPInput): Promise<RsvpRecord> {
   const client = getSupabaseClient()
 
   const newRsvp: NewRsvpRecord = {
@@ -51,11 +51,17 @@ export async function createRsvp(input: RSVPInput): Promise<void> {
     table_id: null,
   }
 
-  const { error } = await client.from('rsvps').insert(newRsvp)
+  const { data, error } = await client
+    .from('rsvps')
+    .insert(newRsvp)
+    .select()
+    .single()
 
   if (error) {
     throw new Error(getRsvpSubmissionErrorMessage(error))
   }
+
+  return data as RsvpRecord
 }
 
 export async function updateRsvp(

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import AddRsvpModal from '../components/admin/AddRsvpModal'
 import SendSms from '../components/admin/SendSms'
 import TablePlan from '../components/admin/TablePlan'
 import { deleteRsvp, getRsvpDashboardStats, updateRsvp } from '../services/rsvps'
@@ -56,6 +57,7 @@ export default function AdminDashboardPage() {
   const [deletingRsvpId, setDeletingRsvpId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<AdminTab>('RSVPs')
   const [searchQuery, setSearchQuery] = useState('')
+  const [showAddModal, setShowAddModal] = useState(false)
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -167,6 +169,15 @@ export default function AdminDashboardPage() {
 
   const refreshStats = async () => {
     setStats(await getRsvpDashboardStats())
+  }
+
+  const handleRsvpCreated = async (newRsvp: RsvpRecord) => {
+    setRsvps((currentRsvps) =>
+      [...currentRsvps, newRsvp].sort((a, b) =>
+        a.first_name.localeCompare(b.first_name),
+      ),
+    )
+    await refreshStats()
   }
 
   const handleSaveEdit = async (id: string) => {
@@ -346,6 +357,16 @@ export default function AdminDashboardPage() {
               </div>
             </section>
           )}
+
+          <div className="admin-toolbar">
+            <button
+              type="button"
+              className="admin-action-button"
+              onClick={() => setShowAddModal(true)}
+            >
+              Add RSVP
+            </button>
+          </div>
 
           <div className="admin-table-wrapper">
             <table className="admin-table">
@@ -633,6 +654,13 @@ export default function AdminDashboardPage() {
             <div className="admin-edit-error">Error: {editError}</div>
           )}
         </>
+      )}
+
+      {showAddModal && (
+        <AddRsvpModal
+          onClose={() => setShowAddModal(false)}
+          onCreated={handleRsvpCreated}
+        />
       )}
     </div>
   )
