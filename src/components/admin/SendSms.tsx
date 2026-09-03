@@ -87,6 +87,14 @@ export default function SendSms() {
     <div className="sms-panel">
       <section className="sms-compose">
         <h2>Send SMS</h2>
+
+        <p className="sms-warning">
+          Inbound replies are not set up yet — guests cannot text this
+          number back. Consider including a contact number in your message
+          (e.g. &ldquo;Questions? Reach out at [phone number]&rdquo;) if
+          guests may need to follow up.
+        </p>
+
         <p className="sms-recipient-note">
           {countError
             ? `Error: ${countError}`
