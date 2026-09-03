@@ -5,7 +5,8 @@ import type { SendSmsResult } from '../../services/sms'
 import { supabase } from '../../services/supabase'
 
 const MAX_MESSAGE_LENGTH = 1600
-const SENDING_DISABLED = true
+const SENDING_DISABLED = false
+const MESSAGE_TEMPLATE = 'From the Fayemi Family: '
 
 async function loadRecipientCount(): Promise<number> {
   if (!supabase) {
@@ -27,7 +28,7 @@ async function loadRecipientCount(): Promise<number> {
 export default function SendSms() {
   const [recipientCount, setRecipientCount] = useState<number | null>(null)
   const [countError, setCountError] = useState<string | null>(null)
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState(MESSAGE_TEMPLATE)
   const [sending, setSending] = useState(false)
   const [sendError, setSendError] = useState<string | null>(null)
   const [result, setResult] = useState<SendSmsResult | null>(null)
@@ -74,7 +75,7 @@ export default function SendSms() {
       const sendResult = await sendSms(trimmedMessage)
 
       setResult(sendResult)
-      setMessage('')
+      setMessage(MESSAGE_TEMPLATE)
     } catch (err) {
       setSendError(err instanceof Error ? err.message : 'Unable to send SMS.')
     } finally {

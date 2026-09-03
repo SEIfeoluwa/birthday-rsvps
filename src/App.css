@@ -1375,6 +1375,7 @@ button {
 }
 
 .admin-table-input {
+  box-sizing: border-box;
   width: 100%;
   min-width: 0;
   padding: 8px 10px;
