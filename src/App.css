@@ -1104,6 +1104,10 @@ button {
     padding: 48px 20px;
   }
 
+  @media (max-width: 420px) {
+    padding: 36px 16px;
+  }
+
   h2 {
     font-family: var(--heading);
     font-style: italic;
@@ -1116,6 +1120,7 @@ button {
 
 .guest-lookup-eyebrow {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 10px;
@@ -1128,6 +1133,12 @@ button {
 
   span {
     color: rgba(216, 181, 109, 0.6);
+  }
+
+  @media (max-width: 420px) {
+    gap: 6px;
+    font-size: 11px;
+    letter-spacing: 1.2px;
   }
 }
 
@@ -1149,6 +1160,10 @@ button {
   @media (max-width: 768px) {
     padding: 40px 0;
   }
+
+  @media (max-width: 420px) {
+    padding: 32px 0;
+  }
 }
 
 .guest-lookup-search-content {
@@ -1169,12 +1184,15 @@ button {
 .guest-lookup-form {
   input {
     width: 100%;
+    min-height: 44px;
     padding: 12px 4px;
     border: none;
     border-bottom: 1px solid rgba(7, 21, 45, 0.28);
     background: transparent;
     color: var(--event-navy);
     font: inherit;
+    /* Explicit 16px prevents iOS Safari from auto-zooming on focus below the 1024px breakpoint. */
+    font-size: 16px;
 
     &:focus {
       outline: none;
@@ -1193,6 +1211,11 @@ button {
   flex-direction: column;
   gap: 16px;
   text-align: left;
+
+  @media (max-width: 420px) {
+    margin-top: 24px;
+    gap: 12px;
+  }
 }
 
 .guest-lookup-result {
@@ -1204,6 +1227,7 @@ button {
   p {
     margin: 0;
     color: rgba(7, 21, 45, 0.75);
+    line-height: 1.5;
   }
 
   p.guest-lookup-welcome {
@@ -1212,6 +1236,14 @@ button {
     font-size: 22px;
     color: var(--event-gold);
     margin: 0 0 6px;
+  }
+
+  @media (max-width: 420px) {
+    padding: 14px;
+
+    p.guest-lookup-welcome {
+      font-size: 20px;
+    }
   }
 }
 

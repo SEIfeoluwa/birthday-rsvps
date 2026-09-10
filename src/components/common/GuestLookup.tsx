@@ -75,7 +75,7 @@ export default function GuestLookup() {
           </p>
           <h2>Find Your Seat</h2>
           <p className="guest-lookup-subtitle">
-            Search your full name or number to find you&rsquo;re your table for the evening.
+            Search your full name to find your table for the evening.
           </p>
         </div>
       </section>
@@ -94,6 +94,12 @@ export default function GuestLookup() {
               value={query}
               onChange={handleQueryChange}
               aria-label="First or last name"
+              autoComplete="off"
+              autoCapitalize="words"
+              autoCorrect="off"
+              spellCheck={false}
+              inputMode="text"
+              enterKeyHint="search"
             />
           </div>
 
@@ -117,7 +123,7 @@ export default function GuestLookup() {
 
                   {result.tableName ? (
                     <p>
-                      You&rsquo;re seated at <strong>{result.tableName}</strong>,
+                      You&rsquo;re seated at <strong>Table {result.tableName}</strong>,
                       with {result.partySize} seat
                       {result.partySize === 1 ? '' : 's'} reserved for your
                       party.
